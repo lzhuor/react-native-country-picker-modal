@@ -11,14 +11,12 @@ import React, { Component } from 'react';
 import {
   StyleSheet,
   View,
-  Image,
   TouchableOpacity,
   Modal,
   Text,
   TextInput,
   ListView,
   ScrollView,
-  Platform,
 } from 'react-native';
 import Fuse from 'fuse.js';
 
@@ -28,24 +26,13 @@ import CloseButton from './CloseButton';
 import countryPickerStyles from './CountryPicker.style';
 import KeyboardAvoidingView from './KeyboardAvoidingView';
 
-let countries = null;
-let Emoji = null;
 let styles = {};
 
 // Maybe someday android get all flags emoji
 // but for now just ios
 // const isEmojiable = Platform.OS === 'ios' ||
 // (Platform.OS === 'android' && Platform.Version >= 21);
-const isEmojiable = Platform.OS === 'ios';
-
-if (isEmojiable) {
-  countries = require('../data/countries-emoji');
-  Emoji = require('react-native-emoji').default;
-} else {
-  countries = require('../data/countries');
-
-  Emoji = <View />;
-}
+const countries = require('../data/countries');
 
 export const getAllCountries = () => cca2List.map((cca2) => ({ ...countries[cca2], cca2 }));
 
@@ -65,7 +52,7 @@ export default class CountryPicker extends Component {
     styles: React.PropTypes.object,
     filterPlaceholder: React.PropTypes.string,
     autoFocusFilter: React.PropTypes.bool,
-  }
+  };
 
   static defaultProps = {
     translation: 'eng',
@@ -73,34 +60,7 @@ export default class CountryPicker extends Component {
     excludeCountries: [],
     filterPlaceholder: 'Filter',
     autoFocusFilter: true,
-  }
-
-  static renderEmojiFlag(cca2, emojiStyle) {
-    return (
-      <Text style={[styles.emojiFlag, emojiStyle]}>
-        { cca2 !== '' && countries[cca2.toUpperCase()] ?
-          <Emoji name={countries[cca2.toUpperCase()].flag} />
-          : null }
-      </Text>
-    );
-  }
-
-  static renderImageFlag(cca2, imageStyle) {
-    return cca2 !== '' ? <Image
-      style={[styles.imgStyle, imageStyle]}
-      source={{ uri: countries[cca2].flag }}
-    /> : null;
-  }
-
-  static renderFlag(cca2, itemStyle, emojiStyle, imageStyle) {
-    return (
-      <View style={[styles.itemCountryFlag, itemStyle]}>
-        {isEmojiable ?
-          CountryPicker.renderEmojiFlag(cca2, emojiStyle)
-          : CountryPicker.renderImageFlag(cca2, imageStyle)}
-      </View>
-    );
-  }
+  };
 
   constructor(props) {
     super(props);
@@ -295,18 +255,14 @@ export default class CountryPicker extends Component {
 
   render() {
     return (
-      <View>
+      <View style={this.props.style}>
         <TouchableOpacity
           onPress={() => this.setState({ modalVisible: true })}
           activeOpacity={0.7}
         >
           {
-            this.props.children ?
-              this.props.children
-              :
-              (<View style={styles.touchFlag}>
-                {CountryPicker.renderFlag(this.props.cca2)}
-              </View>)
+            this.props.children &&
+            this.props.children
           }
         </TouchableOpacity>
         <Modal
